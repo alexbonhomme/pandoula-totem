@@ -1,0 +1,157 @@
+#include "FastLED.h"                                          // FastLED library. Please use the latest development version.
+
+
+// Arduino Beat Detector By Damian Peckett 2015
+// License: Public Domain.
+
+// Our Global Sample Rate, 5000hz
+#define SAMPLEPERIODUS 200
+
+// defines for setting and clearing register bits
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
+
+
+// fin des variables detection bpm
+
+// Definitions variables fixes pour fastled
+#define LED_DT 6                                             // Data pin to connect to the strip.
+#define COLOR_ORDER RGB                                     // ??? It's GRB for WS2812 and BGR for APA102.
+#define LED_TYPE WS2811                                       // Using APA102, WS2812, WS2801. Don't forget to change LEDS.addLeds.
+#define NUM_LEDS 50                                         // Number of LED's.
+
+//Variables modifiables à la volée.
+uint8_t max_bright = 128;                                      // Overall brightness definition. It can be changed on the fly.
+
+struct CRGB leds[NUM_LEDS];                                   // Initialize our LED array.
+
+//Les palettes !
+DEFINE_GRADIENT_PALETTE( heatmap_gp ) {
+  0,     0,  0,    225,   // blue
+  128,   255, 255,  0,   // yellow
+  255,   0, 255,    0
+}; // red
+
+CRGBPalette16 currentPalette(heatmap_gp);
+CRGBPalette16 targetPalette(heatmap_gp);
+
+//fin des def fastled
+//matrice de leds
+int matrix[3][19] = {
+  {27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45},
+  {11, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 26, 26},
+  {0,  0,  1,  1,  2,  3,  3,  4,  4,  5,  5,  6,  7,  7,  8,  8,   9,  9, 10}
+};
+
+
+void setup() {
+  Serial.begin(57600);                                        // Initialize serial port for debugging.
+  delay(1000);                                                // Soft startup to ease the flow of electrons.
+
+  LEDS.addLeds<LED_TYPE, LED_DT, COLOR_ORDER>(leds, NUM_LEDS);  // Use this for WS2812
+
+  FastLED.setBrightness(max_bright);
+  set_max_power_in_volts_and_milliamps(5, 100);               // FastLED Power management set at 5V, 100mA.
+
+
+  //detection beat
+
+  // Set ADC to 77khz, max for 10bit
+  sbi(ADCSRA, ADPS2);
+  cbi(ADCSRA, ADPS1);
+  cbi(ADCSRA, ADPS0);
+
+}
+
+// 20 - 200hz Single Pole Bandpass IIR Filter
+// En copiant ça avec des valeurs différentes on peut récupérer les pics des différentes fréquences
+float bassFilter(float sample) {
+  static float xv[3] = {0, 0, 0}, yv[3] = {0, 0, 0};
+  xv[0] = xv[1]; xv[1] = xv[2];
+  xv[2] = sample / 9.1f;
+  yv[0] = yv[1]; yv[1] = yv[2];
+  yv[2] = (xv[2] - xv[0])
+          + (-0.7960060012f * yv[0]) + (1.7903124146f * yv[1]);
+  return yv[2];
+}
+
+// 10hz Single Pole Lowpass IIR Filter
+float envelopeFilter(float sample) { //10hz low pass
+  static float xv[2] = {0, 0}, yv[2] = {0, 0};
+  xv[0] = xv[1];
+  xv[1] = sample / 160.f;
+  yv[0] = yv[1];
+  yv[1] = (xv[0] + xv[1]) + (0.9875119299f * yv[0]);
+  return yv[1];
+}
+
+// 1.7 - 3.0hz Single Pole Bandpass IIR Filter
+float beatFilter(float sample) {
+  static float xv[3] = {0, 0, 0}, yv[3] = {0, 0, 0};
+  xv[0] = xv[1]; xv[1] = xv[2];
+  xv[2] = sample / 7.015f;
+  yv[0] = yv[1]; yv[1] = yv[2];
+  yv[2] = (xv[2] - xv[0])
+          + (-0.7169861741f * yv[0]) + (1.4453653501f * yv[1]);
+  return yv[2];
+}
+// fin detection beat
+
+void loop()
+{
+//BPM
+
+    unsigned long time = micros(); // Used to track rate
+    float sample, value, envelope, beat, thresh;
+    unsigned char i;
+
+    for(i = 0;;++i){
+        // Read ADC and center so +-512
+        sample = (float)analogRead(0)-503.f;
+
+        // Filter only bass component
+        value = bassFilter(sample);
+
+        // Take signal amplitude and filter
+        if(value < 0)value=-value;
+        envelope = envelopeFilter(value);
+
+        // Every 200 samples (25hz) filter the envelope 
+        if(i == 200) {
+                // Filter out repeating bass sounds 100 - 180bpm
+                beat = beatFilter(envelope);
+
+                // Threshold it, ça marche avec 10 mais l'idéal serait un truc un peu plus dynamique. 
+                // À moins que le gain flottant de l'ampli du micro ne suffise pour que ça s'adapte ?
+                // Ça continue de marcher raisonnablement quand je change le volume en tout cas.
+                thresh = 10;
+                
+                // If we are above threshold, light up LED 
+                if(beat > thresh) {
+                  
+                  showLed(2, 2, 255, 64);
+                }
+                else {
+                  
+                  showLed(2, 2, 64, 16);
+                  
+                }
+                  
+                
+                //Reset sample counter
+                i = 0;
+                  FastLED.show();
+        }
+
+        // Consume excess clock cycles, to keep at 5000 hz
+        for(unsigned long up = time+SAMPLEPERIODUS; time > 20 && time < up; time = micros());
+    }
+}  
+
+    //Fin BPM
+
+//fonctions
