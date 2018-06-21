@@ -1,6 +1,14 @@
 #ifndef BEAT_H
 #define BEAT_H
+//===========================================================================
 
+// Arduino Beat Detector By Damian Peckett 2015
+// License: Public Domain.
+
+// Our Global Sample Rate, 5000hz
+#define SAMPLEPERIODUS 200
+
+//===========================================================================
 void Beat() {
   unsigned long time = micros(); // Used to track rate
   float sampli, valui, envelope, beat, thresh;

@@ -11,15 +11,7 @@
 #define MIC_PIN    0                                                            // Microphone
 #define POT_PIN    4                                                            // Potentiometer
 
-//===========================================================================
 
-// Arduino Beat Detector By Damian Peckett 2015
-// License: Public Domain.
-
-// Our Global Sample Rate, 5000hz
-#define SAMPLEPERIODUS 200
-
-//===========================================================================
 
 //Variables modifiables à la volée.
 uint8_t max_bright = 128;                                      // Overall brightness definition. It can be changed on the fly.
@@ -62,7 +54,7 @@ void setup() {
   LEDS.addLeds<LED_TYPE, LED_DT, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);  // Use this for WS2812
 
   FastLED.setBrightness(max_bright);
-  set_max_power_in_volts_and_milliamps(5, 100);               // FastLED Power management set at 5V, 100mA.
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 100);               // FastLED Power management set at 5V, 100mA.
 }//setup fastled
 
 
@@ -72,7 +64,7 @@ void setup() {
 
 #include "support.h"                                                            // A few extra routines for good luck.
 
-#include "fillnoise8.h"                                                         // Here's the various sound reactive displays.
+//#include "fillnoise8.h"                                                         // Here's the various sound reactive displays.
 #include "jugglep.h"
 #include "matrix.h"
 #include "pixel.h"
@@ -82,15 +74,17 @@ void setup() {
 #include "noisefire.h"
 #include "rainbowbit.h"
 #include "rainbowg.h"
-#include "Beat.h"                                                               //pas encore prêt mais dans l'idée plus puissant que soundmems
-#include "motif1.h"
-#include "radar.h" //ça tourne. Reste à le faire réagir un peu au son
-#include "crisscross.h" //variante de radar en deux dimensions
+//#include "Beat.h"                                                               //pas prêt mais dans l'idée plus puissant que soundmems pour détecter un beat.
+//#include "motif1.h"                                                             //test micro. Même noms de variables que soundmems ?
+#include "radar.h" //ça tourne. Reste à le faire réagir un peu au son.
+#include "crisscross.h" //variante de radar en deux dimensions. Pas très magique mais je pense qu'il y a un potentiel avec plus d'aléatoire.
+#include "ligne.h" //un genre de snake tout pourri
+#include "fillnoisecolonne.h" // version horizontale de fillnoise8. Ça c'est pas mal.
 
 
 typedef void (*SimplePatternList[])();                                          // List of patterns to cycle through.  Each is defined as a separate function below.
 
-SimplePatternList gPatterns = {/*fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat, radar,*/ crisscross};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
+SimplePatternList gPatterns = {/*fillnoise8, jugglep,*/ matrix/*, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat, radar, crisscross, ligne, fillnoisecolonne*/};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
 // fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple
 
 uint8_t gCurrentPatternNumber = 0;                                              // Index number of which pattern is current.
@@ -101,7 +95,7 @@ void loop() {
   soundmems();
 
 
-  showfps();                                                                  // Show the frames per second. It had better not dip too far.
+  //showfps();                                                                  // Show the frames per second. It had better not dip too far.
 
   EVERY_N_MILLISECONDS(20) {
     uint8_t maxChanges = 24;

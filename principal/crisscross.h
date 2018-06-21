@@ -1,8 +1,8 @@
-#ifndef CRISS_CROSS
-#define CRISS_CROSS
+#ifndef CRISS_CROSS_H
+#define CRISS_CROSS_H
 
 unsigned char x, y, z;
-uint8_t v1=40, v2=40, v3=40;
+uint8_t v2, v3;
 
 void crisscross() {
 
@@ -12,21 +12,20 @@ void crisscross() {
   fadeToBlackBy(leds, NUM_LEDS, bpm/10);
 
 
-  EVERY_N_MILLIS(v1) {
+  EVERY_N_MILLIS(50) {
     if (y < 19) {
       showLed(y , 1, color, bright);
       y++;
     }
     else {
       y = 0;
-      v1 = random8(40, 200);
-    }
+         }
   }
 
 
-  EVERY_N_MILLIS(v2) {
+  EVERY_N_MILLIS(60) {
     if (x < 19) {
-      showLed(abs(19-x) , 0, color + 5, bright);
+      showLed(abs8(19-x) , 0, color + 5, bright);
       x++;
     }
     else {
@@ -36,7 +35,7 @@ void crisscross() {
   }
 
 
-  EVERY_N_MILLIS(v3) {
+  EVERY_N_MILLIS(70) {
     if (z < 19) {
       showLed(z , 2, color + 10, bright);
       z++;
@@ -46,26 +45,7 @@ void crisscross() {
       v3 = random8(40, 200);
     }
   }
-  //
-  //    EVERY_N_MILLIS(60) {
-  //    if (w < 3) {
-  //      showLed(random8(19) , w, color, bright);
-  //      w++;
-  //    }
-  //    else w = 0;
-  //  }
-
-
-  //
-  //EVERY_N_MILLISECONDS( 30000 / vitesse ) {
-  //      if (index < 3) {
-  //        showLine(index, color*10, bright);
-  //        index++;
-  //      }
-  //      else index = 0;
-  //    }
-  //
-  FastLED.show();
+  addGlitter(sampleavg/30);   
 
 }
 #endif
