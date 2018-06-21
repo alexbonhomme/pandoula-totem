@@ -60,5 +60,30 @@ void addGlitter( fract8 chanceOfGlitter) {                                      
 
 } // addGlitter()
 
+// rajouts Thomate
+void showLeds(unsigned int coord, unsigned int bright) {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = ColorFromPalette(currentPalette, coord, bright);
+  }
+}
+
+void showLed(int x, int y, unsigned int coord, unsigned int bright) {
+  int pos = matrice[y][x];
+  leds[pos] = ColorFromPalette(currentPalette, coord, bright);
+}
+
+void showColumn(int x, unsigned int coord, unsigned int bright) {
+  showLed(x, 0, coord, bright);
+  showLed(x, 1, coord, bright);
+  showLed(x, 2, coord, bright);
+}
+
+//Test Thomas
+void showLine(int y, unsigned int coord, unsigned int bright) {
+  for (int j = 0; j < 19; j++) {
+    showLed(j, y, coord, bright);
+  }
+}
+
 #endif
 

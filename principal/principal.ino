@@ -18,14 +18,14 @@ struct CRGB leds[NUM_LEDS];                                   // Initialize our 
 
 CRGBPalette16 currentPalette(OceanColors_p);
 CRGBPalette16 targetPalette(OceanColors_p);
-TBlendType    currentBlending = LINEARBLEND;                                    // NOBLEND or LINEARBLEND 
+TBlendType    currentBlending = LINEARBLEND;                                    // NOBLEND or LINEARBLEND
 
 //fin des def fastled
 //matrice de leds
 int matrice[3][19] = {
   {27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45},
-  {11, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 26, 26},
-  {0,  0,  1,  1,  2,  3,  3,  4,  4,  5,  5,  6,  7,  7,  8,  8,   9,  9, 10}
+  {26, 11, 12, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26},
+  { 9, 10,  0,  0,  0,  1,  2,  3,  3,  3,  4,  5,  5,  6,  6,  7,  8,  8,  9}
 };
 
 // Global timer value
@@ -40,7 +40,9 @@ uint16_t oldsample = 0;                                                         
 // Global visual variables used in display and other routines.
 bool thisdir = 0;                                                               // Used in a display routine as well as a support routine.
 
-uint8_t bpm=120; // Il faudrait pouvoir le mesurer plutôt que de le fixer comme ça...
+uint8_t bpm = 120;                                                              // Il faudrait pouvoir le mesurer plutôt que de le fixer comme ça...
+unsigned long currentMillis = 0;                                                // Tentative d'introduire des délais...
+unsigned long oldMillis = 0;
 
 void setup() {
   Serial.begin(57600);                                        // Initialize serial port for debugging.
@@ -50,7 +52,7 @@ void setup() {
 
   FastLED.setBrightness(max_bright);
   set_max_power_in_volts_and_milliamps(5, 100);               // FastLED Power management set at 5V, 100mA.
-}//setup
+}//setup fastled
 
 
 // Include various routines. Makes for an easier to read main program.
@@ -69,36 +71,38 @@ void setup() {
 #include "noisefire.h"
 #include "rainbowbit.h"
 #include "rainbowg.h"
-// #include "Beat.h" //pas encore prêt mais dans l'idée plus puissant que soundmems
+#include "Beat.h"                                                               //pas encore prêt mais dans l'idée plus puissant que soundmems
 #include "motif1.h"
+#include "radar.h"
 
 typedef void (*SimplePatternList[])();                                          // List of patterns to cycle through.  Each is defined as a separate function below.
 
-SimplePatternList gPatterns = {fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple/*motif1*/};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
+SimplePatternList gPatterns = {/*fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat,*/ radar};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
 // fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple
 
 uint8_t gCurrentPatternNumber = 0;                                              // Index number of which pattern is current.
 
 
-void loop() {       
-  
+void loop() {
+
   soundmems();
-  
-//  showfps();                                                                  // Show the frames per second. It had better not dip too far.
+
+
+  //showfps();                                                                  // Show the frames per second. It had better not dip too far.
 
   EVERY_N_MILLISECONDS(20) {
-    uint8_t maxChanges = 24; 
+    uint8_t maxChanges = 24;
     nblendPaletteTowardPalette(currentPalette, targetPalette, maxChanges);      // Awesome palette blending capability.
   }
 
-  EVERY_N_MILLIS_I(thisTimer,timeval) {
+  EVERY_N_MILLIS_I(thisTimer, timeval) {
     thisTimer.setPeriod(timeval);                                               // We can change the timeval on the fly with this line, which is pretty sweet.
     gPatterns[gCurrentPatternNumber]();                                         // Call the current pattern function.
   }
-  
+
   EVERY_N_SECONDS(5) {                                                          // Change the target palette to a related colours every 5 seconds.
     uint8_t baseclr = random8();                                                // This is the base colour. Other colours are within 16 hues of this. One color is 128 + baseclr.
-    targetPalette = CRGBPalette16(CHSV(baseclr, 255, random8(128,255)), CHSV(baseclr+128, 255, random8(128,255)), CHSV(baseclr + random8(16), 192, random8(128,255)), CHSV(baseclr + random8(16), 255, random8(128,255)));
+    targetPalette = CRGBPalette16(CHSV(baseclr, 255, random8(128, 255)), CHSV(baseclr + 128, 255, random8(128, 255)), CHSV(baseclr + random8(16), 192, random8(128, 255)), CHSV(baseclr + random8(16), 255, random8(128, 255)));
   }
 
   FastLED.show();                                                               // Send the 'leds' array out to the actual LED strip.
@@ -106,7 +110,7 @@ void loop() {
   EVERY_N_SECONDS(10) {                                                         // Change the current pattern function periodically.
     nextPattern();
   }
-  
+
 } // loop()
 
 
@@ -118,7 +122,7 @@ void loop() {
 void nextPattern() {                                                            // Add one to the current pattern number, and wrap around at the end.
 
   gCurrentPatternNumber = (gCurrentPatternNumber + 1) % ARRAY_SIZE(gPatterns);  // Another Kriegsman piece of magic.
-  
+
 } // nextPattern()
 
 

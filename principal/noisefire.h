@@ -1,7 +1,7 @@
 #ifndef NOISEFIRE_H
 #define NOISEFIRE_H
 
-void noisefire() {                                                              // Create fire based on noise and sampleavg. 
+void noisefire() {                                                              // Create fire based on noise and sampleavg. À adapter pour être en 2D plutôt qu'en 1D
 
 // Local definitions
   #define xscale 20                                                             // How far apart they are
