@@ -2,26 +2,20 @@
 #define RADAR_H
 
 void radar() {
-  currentMillis = millis(); 
-  uint8_t bright = 64;// map(sampleavg, 0, 20, 40, 128);
-  fadeToBlackBy(leds, NUM_LEDS, 45);
-  if (index < 19) {
-    if (currentMillis-oldMillis>=1000) {
-    oldMillis+=1000;
-    index++;
+
+  uint8_t bright = 48;
+  uint8_t color = 1;
+  fadeToBlackBy(leds, NUM_LEDS, bpm / 15);
+
+  EVERY_N_MILLISECONDS( 10000 / bpm ) {
+    if (index < 19) {
+      showColumn(index, color, bright);
+      index++;
     }
-    
-  } else {
-    index = 0;
-  }
-  for (int j = 0; j < 5; j++) {
-    int color = map (j, 0, 5, 1, 255);
-    showColumn(index+j, 1, map(j, 0, 5, 128, 12));
-   
+    else index = 0;
   }
 
+  FastLED.show();
 
-FastLED.show();
 }
-
 #endif

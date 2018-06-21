@@ -11,6 +11,15 @@
 #define MIC_PIN    0                                                            // Microphone
 #define POT_PIN    4                                                            // Potentiometer
 
+//===========================================================================
+
+// Arduino Beat Detector By Damian Peckett 2015
+// License: Public Domain.
+
+// Our Global Sample Rate, 5000hz
+#define SAMPLEPERIODUS 200
+
+//===========================================================================
 
 //Variables modifiables à la volée.
 uint8_t max_bright = 128;                                      // Overall brightness definition. It can be changed on the fly.
@@ -22,7 +31,7 @@ TBlendType    currentBlending = LINEARBLEND;                                    
 
 //fin des def fastled
 //matrice de leds
-int matrice[3][19] = {
+int matrice[3][19] = {                                                                 //J'ai bidouillé la matrice, maintenant ça colle plutôt bien.
   {27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45},
   {26, 11, 12, 12, 13, 14, 15, 16, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26},
   { 9, 10,  0,  0,  0,  1,  2,  3,  3,  3,  4,  5,  5,  6,  6,  7,  8,  8,  9}
@@ -43,6 +52,8 @@ bool thisdir = 0;                                                               
 uint8_t bpm = 120;                                                              // Il faudrait pouvoir le mesurer plutôt que de le fixer comme ça...
 unsigned long currentMillis = 0;                                                // Tentative d'introduire des délais...
 unsigned long oldMillis = 0;
+
+//=======================================================================================
 
 void setup() {
   Serial.begin(57600);                                        // Initialize serial port for debugging.
@@ -73,11 +84,13 @@ void setup() {
 #include "rainbowg.h"
 #include "Beat.h"                                                               //pas encore prêt mais dans l'idée plus puissant que soundmems
 #include "motif1.h"
-#include "radar.h"
+#include "radar.h" //ça tourne. Reste à le faire réagir un peu au son
+#include "crisscross.h" //variante de radar en deux dimensions
+
 
 typedef void (*SimplePatternList[])();                                          // List of patterns to cycle through.  Each is defined as a separate function below.
 
-SimplePatternList gPatterns = {/*fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat,*/ radar};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
+SimplePatternList gPatterns = {/*fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat, radar,*/ crisscross};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
 // fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple
 
 uint8_t gCurrentPatternNumber = 0;                                              // Index number of which pattern is current.
@@ -88,7 +101,7 @@ void loop() {
   soundmems();
 
 
-  //showfps();                                                                  // Show the frames per second. It had better not dip too far.
+  showfps();                                                                  // Show the frames per second. It had better not dip too far.
 
   EVERY_N_MILLISECONDS(20) {
     uint8_t maxChanges = 24;
