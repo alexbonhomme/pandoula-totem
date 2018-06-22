@@ -11,6 +11,10 @@ void crisscross() {
 
   fadeToBlackBy(leds, NUM_LEDS, bpm/10);
 
+if (peak=true) {
+  y=abs8(18-y);
+  x=abs8(
+}
 
   EVERY_N_MILLIS(50) {
     if (y < 19) {

@@ -12,7 +12,6 @@
 #define POT_PIN    4                                                            // Potentiometer
 
 
-
 //Variables modifiables à la volée.
 uint8_t max_bright = 128;                                      // Overall brightness definition. It can be changed on the fly.
 struct CRGB leds[NUM_LEDS];                                   // Initialize our LED array.
@@ -47,7 +46,10 @@ unsigned long oldMillis = 0;
 
 //=======================================================================================
 
+
+
 void setup() {
+
   Serial.begin(57600);                                        // Initialize serial port for debugging.
   delay(1000);                                                // Soft startup to ease the flow of electrons.
 
@@ -56,6 +58,7 @@ void setup() {
   FastLED.setBrightness(max_bright);
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 100);               // FastLED Power management set at 5V, 100mA.
 }//setup fastled
+
 
 
 // Include various routines. Makes for an easier to read main program.
@@ -75,16 +78,17 @@ void setup() {
 #include "rainbowbit.h"
 #include "rainbowg.h"
 //#include "Beat.h"                                                               //pas prêt mais dans l'idée plus puissant que soundmems pour détecter un beat.
-//#include "motif1.h"                                                             //test micro. Même noms de variables que soundmems ?
+#include "motif1.h"                                                             //vraiment cheum et plante. J'abandonne.
 #include "radar.h" //ça tourne. Reste à le faire réagir un peu au son.
-#include "crisscross.h" //variante de radar en deux dimensions. Pas très magique mais je pense qu'il y a un potentiel avec plus d'aléatoire.
+//#include "crisscross.h" //variante de radar en deux dimensions. Pas très magique mais je pense qu'il y a un potentiel avec plus d'aléatoire.
 #include "ligne.h" //un genre de snake tout pourri
 #include "fillnoisecolonne.h" // version horizontale de fillnoise8. Ça c'est pas mal.
+//#include "boom.h"
 
 
 typedef void (*SimplePatternList[])();                                          // List of patterns to cycle through.  Each is defined as a separate function below.
 
-SimplePatternList gPatterns = {/*fillnoise8, jugglep,*/ matrix/*, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat, radar, crisscross, ligne, fillnoisecolonne*/};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
+SimplePatternList gPatterns = {/*fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat, */motif1/*, crisscross, ligne, fillnoisecolonne*/};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
 // fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple
 
 uint8_t gCurrentPatternNumber = 0;                                              // Index number of which pattern is current.
@@ -92,9 +96,10 @@ uint8_t gCurrentPatternNumber = 0;                                              
 
 void loop() {
 
-  soundmems();
+ soundmems();
 
 
+ 
   //showfps();                                                                  // Show the frames per second. It had better not dip too far.
 
   EVERY_N_MILLISECONDS(20) {

@@ -26,8 +26,6 @@ void soundmems() {                                                              
 
   sample = analogRead(MIC_PIN) - DC_OFFSET;                                     // Sample the microphone. Range will result in -512 to 512.
   sample = abs(sample);                                                         // Get the absolute value and DO NOT combine abs() into the previous line or this will break. Badly!
-  Serial.print(sample);
-  Serial.print(",");
   if (sample < potin) sample = 0;                                               // Filter ambient noise, which is adjustable via the potentiometer.
 
   samplesum += sample - samplearray[samplecount];                               // Add the new sample and remove the oldest sample in the array. No 'for' loops required here for extra speed.
@@ -35,11 +33,15 @@ void soundmems() {                                                              
   samplearray[samplecount] = sample;                                            // Update oldest sample in the array with new sample. By Andrew Tuline.
   samplecount = (samplecount + 1) % NSAMPLES;                                   // Update the counter for the array and rollover if we hit the max.
 
-  Serial.print(",");
-  Serial.print(sampleavg);
-  Serial.print(",");
-  Serial.println(potin);
+
   if (sample > (sampleavg + potin) && (sample < oldsample)) samplepeak = 1;     // We're on the down swing, so we just peaked.
+//    Serial.print(sample);
+//  Serial.print(",");
+ Serial.print(sampleavg);
+ Serial.print(",");
+//  Serial.print(potin);
+//  Serial.print(",");
+  Serial.println(samplepeak);
 
   oldsample = sample;                                                           // We'll use oldsample globally as our 'current' sample.
 

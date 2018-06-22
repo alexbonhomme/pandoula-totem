@@ -11,7 +11,7 @@ void ligne() {
 
   fadeToBlackBy(leds, NUM_LEDS, 10);
   EVERY_N_MILLIS (30) {
-    if (x1 > 0, x1<3, y1>0, y1 < 19) {
+    if (x1 > 0, x1<2, y1>0, y1 < 18) {
       if (r == 0)    x1 = x1 + 1;
       if (r == 1)    y1 = y1 + 1;
       if (r == 2)    x1 = x1 - 1;
