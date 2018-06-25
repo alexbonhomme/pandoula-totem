@@ -35,13 +35,13 @@ void soundmems() {                                                              
 
 
   if (sample > (sampleavg + potin) && (sample < oldsample)) samplepeak = 1;     // We're on the down swing, so we just peaked.
-//  Serial.print(sample);
-//  Serial.print(",");
-//  Serial.print(sampleavg);
-//  Serial.print(",");
-//  Serial.println(potin);
-//  Serial.print(",");
-//  Serial.println(samplepeak);
+  Serial.print(sample);
+  Serial.print(",");
+  Serial.print(sampleavg);
+  Serial.print(",");
+  Serial.println(potin);
+  Serial.print(",");
+  Serial.println(samplepeak);
 
   oldsample = sample;                                                           // We'll use oldsample globally as our 'current' sample.
 
