@@ -9,11 +9,18 @@ void rainbowg() {                                                               
   uint8_t beatC = beatsin8(11, 0, 255);
 
   currentPalette = PartyColors_p;
-  
-  for (int i=0; i < NUM_LEDS; i++) {
-    int colorIndex = (beatA+beatB+beatC)/3 * i * 4 / NUM_LEDS;
-    leds[i] = ColorFromPalette( currentPalette, colorIndex, sampleavg, currentBlending); // Variable brightness 
+
+  for (int i=0; i < 19; i++) {
+    int colorIndex = (beatA+beatB+beatC)/3 * i * 4 / 19;
+    leds[matrice[0][i]] = ColorFromPalette( currentPalette, colorIndex, sampleavg, currentBlending); // Variable brightness 
+    leds[matrice[1][i]] = ColorFromPalette( currentPalette, colorIndex, sampleavg, currentBlending); //  
+    leds[matrice[2][i]] = ColorFromPalette( currentPalette, colorIndex, sampleavg, currentBlending); //  
   }
+  
+//  for (int i=0; i < NUM_LEDS; i++) {
+//    int colorIndex = (beatA+beatB+beatC)/3 * i * 4 / NUM_LEDS;
+//    leds[i] = ColorFromPalette( currentPalette, colorIndex, sampleavg, currentBlending); // Variable brightness 
+//  }
 
   addGlitter(sampleavg);                                                        // Add glitter baesd on sampleavg. By Andrew Tuline.
 

@@ -98,6 +98,7 @@ void showLine(int y, unsigned int coord, unsigned int bright) {
   }
 }
 
+
 //=============================================fonction beat
 
 // 20 - 200hz Single Pole Bandpass IIR Filter

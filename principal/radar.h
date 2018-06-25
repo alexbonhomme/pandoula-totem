@@ -1,26 +1,20 @@
 #ifndef RADAR_H
 #define RADAR_H
 
-byte bindex;
+uint8_t in = 0;
+
 void radar() {
-  uint8_t bright = sampleavg ;
+  timeval = 12;   //accélère un peu la rotation...
+  uint8_t bright = sampleavg + 20 ;
   uint8_t color = 1;
-  uint8_t shift = 10;
-  uint8_t vit = 10;
-  fadeToBlackBy(leds, NUM_LEDS, vit);
-
-  EVERY_N_MILLISECONDS( 1000 / vit ) {
-
-    if (bindex < 19) {
-      showLed(bindex, 0, color, bright);
-      showLed(bindex, 1, color + shift / 2, bright);
-      showLed(bindex, 2, color + shift, bright);
-      bindex++;
-    }
-    else bindex = 0;
+  uint8_t dex = in * 18 / 255;
+  EVERY_N_MILLIS(50){
+    fadeToBlackBy(leds, NUM_LEDS, 3);
   }
+  showColumn(dex, color, bright);
+  in++;
+
   addGlitter(sampleavg / 3);
-  FastLED.show();
 
 }
 #endif

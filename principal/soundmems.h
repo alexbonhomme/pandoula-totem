@@ -21,8 +21,8 @@ void soundmems() {                                                              
 
   samplepeak = 0;                                                               // Reset the global sample peak.
 
-  potin = map(analogRead(POT_PIN), 0, 1023, 0, sensitivity);                    // Read the potentiometer and scale it to our sensitivity setting, which is scaled to our microphone readings.
-  //potin = 30                                                                  // C'est moche mais ça peut marcher sans potard. Et ça filtre les sons en dessous de ce seuil.
+  //potin = map(analogRead(POT_PIN), 0, 1023, 0, sensitivity);                    // Read the potentiometer and scale it to our sensitivity setting, which is scaled to our microphone readings.
+  potin = 42;                                                                  // C'est moche mais ça peut marcher sans potard. Et ça filtre les sons en dessous de ce seuil.
 
   sample = analogRead(MIC_PIN) - DC_OFFSET;                                     // Sample the microphone. Range will result in -512 to 512.
   sample = abs(sample);                                                         // Get the absolute value and DO NOT combine abs() into the previous line or this will break. Badly!
@@ -35,13 +35,13 @@ void soundmems() {                                                              
 
 
   if (sample > (sampleavg + potin) && (sample < oldsample)) samplepeak = 1;     // We're on the down swing, so we just peaked.
-//    Serial.print(sample);
+//  Serial.print(sample);
 //  Serial.print(",");
- Serial.print(sampleavg);
- Serial.print(",");
-//  Serial.print(potin);
+//  Serial.print(sampleavg);
 //  Serial.print(",");
-  Serial.println(samplepeak);
+//  Serial.println(potin);
+//  Serial.print(",");
+//  Serial.println(samplepeak);
 
   oldsample = sample;                                                           // We'll use oldsample globally as our 'current' sample.
 

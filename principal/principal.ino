@@ -55,7 +55,7 @@ void setup() {
 
   LEDS.addLeds<LED_TYPE, LED_DT, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);  // Use this for WS2812
 
-  FastLED.setBrightness(max_bright);
+  FastLED.setBrightness(max_bright);                            // c'est plutôt bien foutu dans le sens ou ça ne fait pas que limiter la luminosité mais ça diminue automatiquement les luminosités intermédiaidres.
   FastLED.setMaxPowerInVoltsAndMilliamps(5, 100);               // FastLED Power management set at 5V, 100mA.
 }//setup fastled
 
@@ -71,10 +71,10 @@ void setup() {
 #include "jugglep.h"
 #include "matrix.h"
 #include "pixel.h"
-#include "onesine.h"
+#include "onesine.h"// il y a un petit effet spirale comme ça qui rend pas mal.
 #include "plasma.h"
 #include "ripple.h"
-#include "noisefire.h"
+#include "noisefire.h"//il faudrait rajouter de l'aléatoire dans le rotatif (bref)
 #include "rainbowbit.h"
 #include "rainbowg.h"
 //#include "Beat.h"                                                               //pas prêt mais dans l'idée plus puissant que soundmems pour détecter un beat.
@@ -84,11 +84,13 @@ void setup() {
 #include "ligne.h" //un genre de snake tout pourri
 #include "fillnoisecolonne.h" // version horizontale de fillnoise8. Ça c'est pas mal.
 //#include "boom.h"
+#include "vague.h" //ok le nom est mal choisi, l'idée est plutôt de faire de l'analyse de spectre
+#include "rond.h"
 
 
 typedef void (*SimplePatternList[])();                                          // List of patterns to cycle through.  Each is defined as a separate function below.
 
-SimplePatternList gPatterns = {/*fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, Beat, */motif1/*, crisscross, ligne, fillnoisecolonne*/};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
+SimplePatternList gPatterns = {/*jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, radar, crisscross, ligne, fillnoisecolonne, rond */motif1};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
 // fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple
 
 uint8_t gCurrentPatternNumber = 0;                                              // Index number of which pattern is current.
