@@ -12,7 +12,9 @@ void matrix() {                                                                 
 //  leds[matrice[1][0]] = ColorFromPalette(currentPalette, thishue++, sampleavg, LINEARBLEND);
 //  leds[matrice[2][0]] = ColorFromPalette(currentPalette, thishue++, sampleavg, LINEARBLEND);
   
-  showColumn(1, thishue++, sampleavg);
+  showLed(1,0, thishue++, sampleavg);
+  showLed(1,1, 12+thishue++, sampleavg);
+  showLed(1,2, 24+thishue++, sampleavg);
 
   //for (int i = NUM_LEDS-1; i >0 ; i-- ) leds[i] = leds[i-1];
   

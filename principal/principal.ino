@@ -49,8 +49,7 @@ unsigned long oldMillis = 0;
 
 
 void setup() {
-  analogReference(INTERNAL);    ///peut être qu'il y a une possibilité de réduire le bruit en utilisant le pin AREF ? https://www.reddit.com/r/arduino/comments/57dadp/make_an_aref_pin_on_your_arduino_pro_mini_for/
-
+  
   Serial.begin(57600);                                        // Initialize serial port for debugging.
   delay(1000);                                                // Soft startup to ease the flow of electrons.
 
@@ -68,30 +67,29 @@ void setup() {
 
 #include "support.h"                                                            // A few extra routines for good luck.
 
-//#include "fillnoise8.h"                                                         // Here's the various sound reactive displays.
-#include "jugglep.h"
-#include "matrix.h"
-#include "pixel.h"
+#include "jugglep.h" //vérifié, sympa.
+#include "matrix.h"//vérifié, sympa.
+#include "pixel.h" //vérifié, sympa.
 #include "onesine.h"// il y a un petit effet spirale comme ça qui rend pas mal.
 #include "plasma.h"
 #include "ripple.h"
 #include "noisefire.h"//il faudrait rajouter de l'aléatoire dans le rotatif (bref)
-#include "rainbowbit.h"
-#include "rainbowg.h"
-//#include "Beat.h"                                                               //pas prêt mais dans l'idée plus puissant que soundmems pour détecter un beat.
-#include "motif1.h"                                                             //vraiment cheum et plante. J'abandonne.
-#include "radar.h" //ça tourne. Reste à le faire réagir un peu au son.
-#include "crisscross.h" //variante de radar en deux dimensions. Pas très magique mais je pense qu'il y a un potentiel avec plus d'aléatoire.
-#include "ligne.h" //un genre de snake tout pourri
-#include "fillnoisecolonne.h" // version horizontale de fillnoise8. Ça c'est pas mal.
-//#include "boom.h"
+#include "rainbowbit.h" //vérifié, sympa.
+#include "rainbowg.h" //vérifié, sympa. peut être amélioré facilement
+#include "motif1.h"                                                             //réécrit en plus simple et plus joli, bien coloré. Une marge d'amélioration quand même.
+#include "radar.h" //ça tourne. 
+#include "crisscross.h" //variante de radar en deux dimensions. Pas très magique mais je pense qu'il y a un potentiel avec plus d'aléatoire. plante pour l'instant
+//#include "ligne.h" //un genre de snake tout pourri
+#include "fillnoisecolonne.h" // version horizontale de fillnoise8. Ça c'est bien.
 #include "vague.h" //ok le nom est mal choisi, l'idée est plutôt de faire de l'analyse de spectre
-#include "rond.h"
-#include "flash.h"
+#include "rond.h" //celui ci me plait bien. un ou deux petits bugs mais pas méchants.
+#include "flash.h" //terminé, vérifié, rend bien.
+//#include "fnoiseligne.h" //pas fini
+//#include "volubar.h" //en cours mais bon potentiel
 
 typedef void (*SimplePatternList[])();                                          // List of patterns to cycle through.  Each is defined as a separate function below.
 
-SimplePatternList gPatterns = {/*jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, radar, crisscross, ligne, fillnoisecolonne, rond */flash};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
+SimplePatternList gPatterns = {jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple, motif1, radar, crisscross, fillnoisecolonne, rond, flash};                                         // HERE IS WHERE YOU ADD YOUR ROUTINE TO THE LIST!!!!
 // fillnoise8, jugglep, matrix, noisefire, onesine, pixel, plasma, rainbowbit, rainbowg, ripple
 
 uint8_t gCurrentPatternNumber = 0;                                              // Index number of which pattern is current.
@@ -122,7 +120,7 @@ void loop() {
 
   FastLED.show();                                                               // Send the 'leds' array out to the actual LED strip.
 
-  EVERY_N_SECONDS(10) {                                                         // Change the current pattern function periodically.
+  EVERY_N_SECONDS(20) {                                                         // Change the current pattern function periodically.
     nextPattern();
   }
 
