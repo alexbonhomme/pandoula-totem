@@ -1,35 +1,43 @@
 #ifndef FIREWIDE_H
 #define FIREWIDE_H
 
-void firewide() {                                                               // Create fire based on noise and sampleavg. 
+  uint8_t bright1 = 0,
+        bright2 = 0,
+        bright3 = 0;
 
-// Local definitions
-  #define xscale 20                                                             // How far apart they are
-  #define yscale 3                                                              // How fast they move
+void firewide() {         
 
-// Persistent local variables
+  uint8_t vit = 600/thisdelay;
 
-// Temporary local variables
-  uint16_t index = 0;                                                            // Current colour lookup value.
+  bright1 = beatsin8(vit, 0, sampleavg, 0);
+  bright2 = beatsin8(vit, 0, sampleavg, 2 * vit);
+  bright3 = beatsin8(vit, 0, sampleavg, 4 * vit);
+
+  if (bright1<10) bright1=0;
+  if (bright1<10) bright1=0;
+  if (bright1<10) bright1=0;
+
+//  Serial.print(bright1);
+//  Serial.print(" ");
+//  Serial.print(bright2);
+//  Serial.print(" ");
+//  Serial.println(bright3);
 
 
-  currentPalette = CRGBPalette16(CHSV(0,255,2), CHSV(0,255,4), CHSV(0,255,6), CHSV(0, 255, 8),    // Fire palette definition. Lower value = darker.
-                                 CHSV(0, 255, 16), CRGB::Red, CRGB::Red, CRGB::Red,                                   
-                                 CRGB::DarkOrange,CRGB::DarkOrange, CRGB::Orange, CRGB::Orange,
-                                 CRGB::Yellow, CRGB::Orange, CRGB::Yellow, CRGB::Yellow);
-  
-  for(int i = 0; i < NUM_LEDS; i++) {
 
-    index = inoise8(i*xscale,millis()*yscale*NUM_LEDS/255);                       // X location is constant, but we move along the Y at the rate of millis(). By Andrew Tuline.
+  for (int i = 0; i < 16; i++) {
+    showLed(i, 2, beatsin8(vit,0,255)+10*i, bright1);
+    showLed(i, 1, beatsin8(vit,0,255,vit/2)+10*i, bright2);
+    showLed(i, 0, beatsin8(vit,0,255,vit)+10*i, bright3);
+    //    leds[matrice[2][i]] = CHSV( 3*i, 255, bright1);
+    //    leds[matrice[1][i]] = CHSV( 3*i, 255, bright2);
+    //    leds[matrice[0][i]] = CHSV( 3*i, 255, bright3);
+  }
 
-    index = (255 - i*256/NUM_LEDS) * index / 128;                                 // Now we need to scale index so that it gets blacker as we get close to one of the ends
-                                                                                
-    leds[NUM_LEDS/2-i/2+1] = ColorFromPalette(currentPalette, index, sampleavg, NOBLEND);      // With that value, look up the 8 bit colour palette value and assign it to the current LED. 
-    leds[NUM_LEDS/2+i/2-1] = ColorFromPalette(currentPalette, index, sampleavg, NOBLEND);      // With that value, look up the 8 bit colour palette value and assign it to the current LED. 
-    
-  }                                                                               // The higher the value of i => the higher up the palette index (see palette definition).
+
+  fadeToBlackBy(leds, NUM_LEDS, 2000 / vit);
+
 
 } // firewide()
 
 #endif
-

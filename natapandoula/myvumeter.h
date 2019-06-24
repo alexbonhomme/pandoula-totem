@@ -11,7 +11,7 @@ void myvumeter() {                                                        // A v
   static int gravityCounter = 0;
 
 // Temporary local variables
-  uint8_t tempsamp = constrain(sampleavg,0,NUM_LEDS-1);                     // Keep the sample from overflowing.
+  uint8_t tempsamp = constrain(sampleavg/2,0,NUM_LEDS-1);                     // Keep the sample from overflowing.
 
 
   fadeToBlackBy(leds, NUM_LEDS, 160);
@@ -35,4 +35,3 @@ void myvumeter() {                                                        // A v
 } // myvumeter()
 
 #endif
-

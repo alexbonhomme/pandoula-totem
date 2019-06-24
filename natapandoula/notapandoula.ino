@@ -144,14 +144,14 @@ CNec IRLremote;
 
 
 // Fixed definitions cannot change on the fly.
-#define LED_DT 6                                             // Serial data pin for all strands
+#define LED_DT 4                                             // Serial data pin for all strands
 //#define LED_CK 11                                             // Serial clock pin for WS2801 or APA102
 #define COLOR_ORDER RGB                                       // It's GRB for WS2812
 #define LED_TYPE WS2811                                       // Alternatively WS2801, or WS2812
 #define MAX_LEDS 50                                       // Maximum number of LED's defined (at compile time).
 
 // Fixed sound hardware definitions cannot change on the fly.
-#define MIC_PIN    0                                          // Microphone on A0.
+#define MIC_PIN    1                                          // Microphone on A1.
 
 // Initialize changeable global variables.
 uint8_t NUM_LEDS;                                             // Number of LED's we're actually using, and we can change this only the fly for the strand length.
@@ -198,7 +198,7 @@ uint8_t currentPatternIndex = 0;                               // Index number o
 #define INITGLIT 0                                            // Glitter is off by default.
 #define INITLEN  20                                           // Start length is 20 LED's.
 #define INITMAX  20                                           // Starting maxvol value.
-#define INITMODE 0                                            // Startmode is 0, which is a noise routine.
+#define INITMODE 15                                            // Startmode is 15, which is a truc pour vérifier que ça va.
 #define INITPAL  0                                            // Starting palette number.
 #define INITSQU  20                                           // Starting squelch value.
 #define INITSPED 0                                            // Initial thisdelay value.
@@ -286,29 +286,29 @@ Bubble trail[maxTrails];
 
 
 // Non sound reactive routine(s)
-//#include "noisepal.h"         //sorte de lava lampe. Modifié pour coller en 2D, ok
+#include "noisepal.h"         //sorte de lava lampe. Modifié pour coller en 2D, ok
 
 //// Main sound reactive routines
 //
-//#include "fillnoise.h"      // Center to edges with base color and twinkle. Modifié pour la 2D, quelques buguitos mais rend plutôt OK.
-//#include "jugglep.h"        // Long line of sinewaves Pas modifié mais plutôt réactif même si les couleurs sont pas toppes.
-//#include "ripple.h"         // Juggle with twinkles Pas modifié mais plutôt réactif 
-//#include "pixel.h"          // Long line of colours Pas modifié, pas foufou.
-//#include "matrix.h"         // Start to end with twinkles Pas fini mais OK
-//#include "onesine.h"        // Long line of shortlines Bizarre mais sympa
+#include "fillnoise.h"      // Center to edges with base color and twinkle. Modifié pour la 2D, quelques buguitos mais rend plutôt OK.
+#include "jugglep.h"        // Long line of sinewaves Pas modifié mais plutôt réactif même si les couleurs sont pas toppes.
+#include "ripple.h"         // Juggle with twinkles Pas modifié mais plutôt réactif 
+#include "pixel.h"          // Long line of colours Pas modifié, pas foufou.
+#include "matrix.h"         // Start to end with twinkles Pas fini mais OK
+#include "onesine.h"        // Long line of shortlines Bizarre mais sympa
 #include "fire.h"           // Complètement transformé, sert à la calibration...
-//#include "rainbowpeak.h"    // Long line of short lines with twinkles Pas modifié mais nickel comme ça.
-//#include "firewide.h"       // Center to edges
-//#include "noisewide.h"      // Center to edges
-//#include "plasma.h"         // Long line of short lines Bidouillé, sympa mais pas nickel...
-//#include "besin.h"          // center to edges with black Ça serait bien que ça fonctionne de l'intérieur vers l'extérieur mais j'y arrive pas.
-//#include "noisewide.h"      // Long line
-//#include "myvumeter.h"      // My own vu meter
-//#include "sinephase.h"      // Changing phases of sine waves
-//
-//// Reko Merio display routines
-//#include "bubbles.h"        // Bubbles
-//#include "trails.h"         // Trails
+#include "rainbowpeak.h"    // Long line of short lines with twinkles Pas modifié mais nickel comme ça.
+#include "firewide.h"       // Complètement transformé, c'est le motif1 de l'année dernière
+#include "noisewide.h"      // Center to edges
+#include "plasma.h"         // Long line of short lines Bidouillé, sympa mais pas nickel...
+#include "besin.h"          // center to edges with black Ça serait bien que ça fonctionne de l'intérieur vers l'extérieur mais j'y arrive pas.
+#include "noisewide.h"      // Long line
+#include "myvumeter.h"      // My own vu meter
+#include "sinephase.h"      // Changing phases of sine waves
+
+// Reko Merio display routines
+#include "bubbles.h"        // Bubbles
+#include "trails.h"         // Trails
 
 
 
@@ -324,7 +324,7 @@ void setup() {
 
   Serial.println(F(" ")); Serial.println(F("---SETTING UP notasound---"));
 
-   analogReference(INTERNAL);                                                      // Comment out this line for 3.3V Arduino's, ie. Flora, etc or if powering microphone with 5V.
+  analogReference(DEFAULT);                                                      // Comment out this line for 3.3V Arduino's, ie. Flora, etc or if powering microphone with 5V.
   
   delay(1000);                                                                    // Slow startup so we can re-upload in the case of errors.
 
@@ -334,7 +334,8 @@ void setup() {
 //    LEDS.addLeds<LED_TYPE, LED_DT, LED_CK, COLOR_ORDER >(leds, MAX_LEDS);       // APA102 or WS2801 4 pin definition.
   LEDS.addLeds<LED_TYPE, LED_DT, COLOR_ORDER >(leds, MAX_LEDS);                   // WS2812 3 pin definition.
   
-  set_max_power_in_volts_and_milliamps(5, 200);                                   // 5V, 200mA maximum power draw.
+//  set_max_power_in_volts_and_milliamps(5, 200);                                   // 5V, 200mA maximum power draw.
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 200); 
 
 
 // Setup the ADC on a Nano or similar AVR for polled 10 bit sampling on analog pin 5 at 9.6KHz.
@@ -345,7 +346,7 @@ void setup() {
   ADCSRB = 0;                             // Ditto.
   ADMUX = 0;                              // Ditto.
   ADMUX |= (MIC_PIN & 0x07);              // Set A5 analog input pin.
-  ADMUX |= (0 << REFS0);                  // Set reference voltage  (analog reference(external), or using 3.3V microphone on 5V Arduino.
+  ADMUX |= (1 << REFS0);                  // Set reference voltage  (analog reference(external), or using 3.3V microphone on 5V Arduino.
                                           // Set that to 1 if using 5V microphone or 3.3V Arduino.
 //  ADMUX |= (1 << ADLAR);                  // Left justify to get 8 bits of data.                                          
   ADMUX |= (0 << ADLAR);                  // Right justify to get full 10 A/D bits.
@@ -465,23 +466,23 @@ void strobe_mode(uint8_t newMode, bool mc){                   // mc stands for '
 
   if (!strandActive) {                                          // Stops the display sequence if we're updating the EEPROM in ACTIVE mode.
     switch (newMode) {                                          // If first time through a new mode, then initialize the variables for a given display, otherwise, just call the routine.
-//      case   0: if(mc) {thisdelay=20;} noisepal(); break;                                 // Change mode 0 to a generic non-reactive noise routine.
-//      case   1: if(mc) {thisdelay=20;} ripple(); break;                                   // samplepeak
-//      case   2: if(mc) {thisdelay=40;} fillnoise(); break;                                // sampleavg
-//      case   3: if(mc) {thisdelay=40;} bubbles(); break;                                  // samplepeak
-//      case   4: if(mc) {thisdelay= 0;} pixel(); break;                                    // sample
-//      case   5: if(mc) {thisdelay=30;} onesine(); break;                                  // sampleavg
-//      case   6: if(mc) {thisdelay=10;} rainbowpeak(); break;                              // samplepeak
-//      case   7: if(mc) {thisdelay=10;} noisewide(); break;                                // sampleavg
-//      case   8: if(mc) {thisdelay=30;} myvumeter(); break;                                // sampleavg
-//      case   9: if(mc) {thisdelay=10;} jugglep(); break;                                  // sampleavg
-//      case  10: if(mc) {thisdelay=10;} firewide(); break;                                 // sampleavg
-//      case  11: if(mc) {thisdelay=40;} trails(); break;                                   // samplepeak
-//      case  12: if(mc) {thisdelay=20;} plasma(); break;                                   // sampleavg
-//      case  13: if(mc) {thisdelay=90;} besin(); break;                                    // sampleavg
-//      case  14: if(mc) {thisdelay=40;} matrix(); break;                                   // sample
+      case   0: if(mc) {thisdelay=20;} noisepal(); break;                                 // Change mode 0 to a generic non-reactive noise routine.
+      case   1: if(mc) {thisdelay=20;} ripple(); break;                                   // samplepeak
+      case   2: if(mc) {thisdelay=40;} fillnoise(); break;                                // sampleavg
+      case   3: if(mc) {thisdelay=40;} bubbles(); break;                                  // samplepeak
+      case   4: if(mc) {thisdelay= 0;} pixel(); break;                                    // sample
+      case   5: if(mc) {thisdelay=30;} onesine(); break;                                  // sampleavg
+      case   6: if(mc) {thisdelay=10;} rainbowpeak(); break;                              // samplepeak
+      case   7: if(mc) {thisdelay=10;} noisewide(); break;                                // sampleavg
+      case   8: if(mc) {thisdelay=30;} myvumeter(); break;                                // sampleavg
+      case   9: if(mc) {thisdelay=10;} jugglep(); break;                                  // sampleavg
+      case  10: if(mc) {thisdelay=10;} firewide(); break;                                 // sampleavg
+      case  11: if(mc) {thisdelay=40;} trails(); break;                                   // samplepeak
+      case  12: if(mc) {thisdelay=20;} plasma(); break;                                   // sampleavg
+      case  13: if(mc) {thisdelay=90;} besin(); break;                                    // sampleavg
+      case  14: if(mc) {thisdelay=40;} matrix(); break;                                   // sample
       case  15: if(mc) {thisdelay= 0;} fire(); break;                                     // sampleavg
-//      case  16: if(mc) {thisdelay=10;} sinephase(); break;                                // sampleavg
+      case  16: if(mc) {thisdelay=10;} sinephase(); break;                                // sampleavg
       default: break;
     } // switch newMode
   } // !strandActive
@@ -526,9 +527,11 @@ void getirl() {                                                   // This is the
     if(strandFlag == 1) set_strand();       // Set the strand length
     
 //    Serial.print(F("Address: "));           // Print the protocol data. Note that there's also 65535, which we don't use.
-//    Serial.println(irdata.address);
+//    Serial.println(irdata.address, HEX);
 //    Serial.print(F("Command: "));
-//    Serial.println(irdata.command);
+//    Serial.println(irdata.command, HEX);
+//    Serial.print(F("hop : "));
+//    Serial.println(irdata.command);    
 //    Serial.println();
 
     if (IRAddress == IR_ADD) {     

@@ -79,16 +79,16 @@ void soundmems() {                                                              
                   
      
 
-  Serial.print(sample);                                                           // Our oscilloscope.
-  Serial.print(" ");
-  Serial.print(sampleavg);
-  Serial.print(" ");
-  Serial.print(sampleavg+maxvol);
-  Serial.print(" ");
-  Serial.print(samplepeak*150);
-  Serial.print(" ");
-  Serial.print(squelch);
-  Serial.println(" ");
+//  Serial.print(sample);                                                           // Our oscilloscope.
+//  Serial.print(" ");
+//  Serial.print(sampleavg);
+//  Serial.print(" ");
+//  Serial.print(sampleavg+maxvol);
+//  Serial.print(" ");
+//  Serial.print(samplepeak*150);
+//  Serial.print(" ");
+//  Serial.print(squelch);
+//  Serial.println(" ");
 
 
 //  Serial.print(sampli);                                                           // Our beatcilloscope.
