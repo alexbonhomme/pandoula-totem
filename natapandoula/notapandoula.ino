@@ -302,13 +302,13 @@ Bubble trail[maxTrails];
 #include "noisewide.h"      // Center to edges
 #include "plasma.h"         // Long line of short lines Bidouillé, sympa mais pas nickel...
 #include "besin.h"          // center to edges with black Ça serait bien que ça fonctionne de l'intérieur vers l'extérieur mais j'y arrive pas.
-#include "noisewide.h"      // Long line
-#include "myvumeter.h"      // My own vu meter
-#include "sinephase.h"      // Changing phases of sine waves
+//#include "noisewide.h"      // Long line
+#include "myvumeter.h"      // My own vu meter Pas modifié, un peu spiraleux mais sympa.
+#include "sinephase.h"      // Changing phases of sine waves Bidouillé du centre vers l'extérieur. OK !
 
 // Reko Merio display routines
-#include "bubbles.h"        // Bubbles
-#include "trails.h"         // Trails
+#include "bubbles.h"        // Bubbles .
+#include "trails.h"         // Trails Pas modifié, ok
 
 
 
@@ -527,12 +527,11 @@ void getirl() {                                                   // This is the
     if(strandFlag == 1) set_strand();       // Set the strand length
     
 //    Serial.print(F("Address: "));           // Print the protocol data. Note that there's also 65535, which we don't use.
-//    Serial.println(irdata.address, HEX);
+//    Serial.println(irdata.address);
 //    Serial.print(F("Command: "));
-//    Serial.println(irdata.command, HEX);
-//    Serial.print(F("hop : "));
-//    Serial.println(irdata.command);    
+//    Serial.println(irdata.command);   
 //    Serial.println();
+    
 
     if (IRAddress == IR_ADD) {     
       switch(IRCommand) {

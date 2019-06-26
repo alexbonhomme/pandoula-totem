@@ -21,10 +21,10 @@ void noisewide() {
 
     leds[matrice[0][8-i]] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);       //on réessaie
     leds[matrice[0][8+i]] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);
-    leds[matrice[1][8-i/2]] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);
-    leds[matrice[1][8+i/2]] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);
-    leds[matrice[2][8-i/4]] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);
-    leds[matrice[2][8+i/4]] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);
+    leds[matrice[1][8-i]] = ColorFromPalette(currentPalette, index, sampleavg-10, currentBlending);
+    leds[matrice[1][8+i]] = ColorFromPalette(currentPalette, index, sampleavg-10, currentBlending);
+    leds[matrice[2][8-i]] = ColorFromPalette(currentPalette, index, sampleavg-15, currentBlending);
+    leds[matrice[2][8+i]] = ColorFromPalette(currentPalette, index, sampleavg-15, currentBlending);
 
 
     leds[NUM_LEDS/2-i] = ColorFromPalette(currentPalette, index, sampleavg, currentBlending);

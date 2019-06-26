@@ -36,15 +36,8 @@ void soundmems() {                                                              
 //  if (sample < sampleavg+maxvol) samplepeak = 0;                              // Reset the global sample peak only if we're below maxvol. Actually, display routines need to reset this.
 
 
-/*                                                                              //Version de secours si micro HS...
-  sample = beatsin8 (600/thisdelay, 10, 120);
-    
-  EVERY_N_MILLIS(thisdelay*3){
-    samplepeak = 1 ; peaktime=millis();
-    return samplepeak;
-  }
 
-*/
+
   
 // Let's populate an array (circular buffer) in order to calculate an average value across NSAMPLES.
   samplesum += sample - samplearray[samplecount];                               // Add the new sample and remove the oldest sample in the array. No 'for' loops required here for extra speed.

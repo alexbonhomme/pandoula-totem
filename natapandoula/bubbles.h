@@ -1,9 +1,6 @@
 #ifndef BUBBLES_H
 #define BUBBLES_H
 
-/* 
- *  Adapted from Reko MeriÃ¶. A pretty cool looking routine.
- */
 
 void bubbles() {                                          // Spawns bubbles that move when audio peaks enough
 
@@ -40,4 +37,3 @@ void bubbles() {                                          // Spawns bubbles that
 } // bubbles()
 
 #endif
-
