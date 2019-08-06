@@ -33,6 +33,8 @@ void soundmems() {                                                              
   sample = ((sample * 3) + micIn) >> 2;                                       // Somewhat dampened reading, which is good enough for us.
 //  sample = micIn;
 
+  sample = -((scalvol-49)*sample)/50;                                           // Échelonnage ?
+
 //  if (sample < sampleavg+maxvol) samplepeak = 0;                              // Reset the global sample peak only if we're below maxvol. Actually, display routines need to reset this.
 
 
@@ -76,12 +78,13 @@ void soundmems() {                                                              
 //                   samplepeak == 0                                                                         // and there wasn't a recent peak.
 //        ) {samplepeak = 1;peaktime=millis();}
 //                
-                  
-     
+
 
 //  Serial.print(sample);                                                           // Our oscilloscope.
 //  Serial.print(" ");
 //  Serial.print(sampleavg);
+//  Serial.print(" ");
+//  Serial.print(scalvol);
 //  Serial.print(" ");
 //  Serial.print(sampleavg+maxvol);
 //  Serial.print(" ");

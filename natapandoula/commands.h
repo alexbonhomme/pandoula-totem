@@ -4,7 +4,7 @@
 
 // This maps 24 IR key locations to the digital output of each key. Edit to match your controller.
 // I have another almost identical 24 button controller, and it has different commands.
-/*
+
 #define IR_ADD  61184
 
 #define IR_A1   0 
@@ -39,7 +39,7 @@
 
 
 
-
+/*
 // Here's the other controller notapandoula sur ir plus
 
 #define IR_ADD  65280
@@ -74,7 +74,9 @@
 #define IR_F3   15
 #define IR_F4   12
 
-*/
+
+
+
 #define IR_ADD  65026                             //télécommande Dav
 
 #define IR_A1   9
@@ -106,6 +108,6 @@
 #define IR_F2   14
 #define IR_F3   8
 #define IR_F4   13
-
+*/
 
 #endif

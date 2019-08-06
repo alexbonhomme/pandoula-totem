@@ -193,10 +193,10 @@ uint8_t currentPatternIndex = 0;                               // Index number o
 #define INITVAL   0x57                                        // If this is the value in ISINIT, then the Arduino has been initialized. Change to completely reset your Arduino.
 
 #define INITBRIT 128                                          // Initial max_bright.
-#define INITDEL  0                                            // Starting mesh delay value of the strand in milliseconds.
+#define INITDEL  0                                            // Starting mesh delay value of the strand in milliseconds. Utilisé pour échelonner le volume plutôt...
 #define INITDIRN 1                                            // Initial thisdir value.
 #define INITGLIT 0                                            // Glitter is off by default.
-#define INITLEN  20                                           // Start length is 20 LED's.
+#define INITLEN  48                                           // Start length is 48 LED's.
 #define INITMAX  20                                           // Starting maxvol value.
 #define INITMODE 15                                            // Startmode is 15, which is a truc pour vérifier que ça va.
 #define INITPAL  0                                            // Starting palette number.
@@ -207,11 +207,12 @@ const uint32_t STRANDID = IR_C1;                              // This is the ID 
 bool strandActive = 0;                                        // Used for configuration changes only. 0=inactive, 1=active. Must be activated by button press of B1, followed by C1 (or the appropriate STRANDID button).
 bool strandFlag = 0;                                          // Flag to let us know if we're changing the active strand.
 
-uint16_t meshdelay;                                           // Timer for the notasound. Works with INITDEL.
+uint16_t meshdelay;                                           // Timer for the notasound. Works with INITDEL. Pas utilisé, on utiise les touches pour échelonner le volume plutôt.
+uint16_t scalvol;                                             // Réglage de la sensibilité du micro...
 
 uint8_t ledMode = 0;                                          // Starting mode is typically 0. Change INITMODE if you want a different starting mode.
 uint8_t demorun = 0;                                          // 0 = regular mode, 1 = demo mode, 2 = shuffle mode.
-uint8_t maxMode = 16;                                         // Maximum number of modes.
+uint8_t maxMode = 17;                                         // Maximum number of modes.
 uint8_t demotime = 30;                                        // Set the length of the demo timer.
 
 
@@ -310,7 +311,8 @@ Bubble trail[maxTrails];
 #include "bubbles.h"        // Bubbles .
 #include "trails.h"         // Trails Pas modifié, ok
 
-
+//DJ Mitchou Pitchou routines
+#include "ronds.h"          // Enfin du 2D !
 
 
 /*------------------------------------------------------------------------------------------
@@ -381,7 +383,8 @@ void setup() {
 
   ledMode = EEPROM.read(STARTMODE);                                               // Location 0 is the starting mode.
   NUM_LEDS = EEPROM.read(STRANDLEN);                                              // Need to ensure NUM_LEDS < MAX_LEDS elsewhere.
-  meshdelay = EEPROM.read(STRANDEL);                                              // This is our notasound delay for cool delays across strands.
+  //meshdelay = EEPROM.read(STRANDEL);                                              // This is our notasound delay for cool delays across strands.
+  scalvol = EEPROM.read(STRANDEL);
   squelch = EEPROM.read(SQU);                                                     // notasound squelch is stored in EEPROM.
   maxvol = EEPROM.read(MXV);                                                      // notasound maxvol for peak detection in EEPROM.
   glitter = EEPROM.read(GLIT);                                                    // notasound glitter.
@@ -393,7 +396,8 @@ void setup() {
 
   Serial.println(F("---EEPROM COMPLETE---"));
  
-  Serial.print(F("Initial mesh delay: ")); Serial.print(meshdelay*100); Serial.println(F("ms delay"));
+  //Serial.print(F("Initial mesh delay: ")); Serial.print(meshdelay*100); Serial.println(F("ms delay"));
+  Serial.print(F("Initial scalvol: ")); Serial.println(-((scalvol-49)*sample)/50);
   Serial.print(F("Initial strand length: ")); Serial.print(NUM_LEDS); Serial.println(F(" LEDs"));
   Serial.print(F("Strand ID: ")); Serial.println(STRANDID);
   Serial.print(F("Squelch: ")); Serial.println(squelch);
@@ -483,6 +487,7 @@ void strobe_mode(uint8_t newMode, bool mc){                   // mc stands for '
       case  14: if(mc) {thisdelay=40;} matrix(); break;                                   // sample
       case  15: if(mc) {thisdelay= 0;} fire(); break;                                     // sampleavg
       case  16: if(mc) {thisdelay=10;} sinephase(); break;                                // sampleavg
+      case  17: if(mc) {thisdelay=10;} ronds();break;                                     // samplepeak
       default: break;
     } // switch newMode
   } // !strandActive
@@ -558,8 +563,10 @@ void getirl() {                                                   // This is the
 
 
         case IR_E1:  maxvol--; if(maxvol <0) maxvol = 0; EEPROM.write(MXV, maxvol);Serial.print(F("Maxvol: ")); Serial.println(maxvol);  break;   //e1 -  Reduce maxvol for more sensitive peak detection
-        case IR_E2:  if (strandActive==1) set_meshdel(); break;                                                                                   //e2 - Shorter mesh delay by 100ms
-        case IR_E3:  if (strandActive==1) set_meshdel(); break;                                                                                   //e3 - Longer mesh delay by 100ms
+//        case IR_E2:  if (strandActive==1) set_meshdel(); break;                                                                                   //e2 - Shorter mesh delay by 100ms
+//        case IR_E3:  if (strandActive==1) set_meshdel(); break;                                                                                   //e3 - Longer mesh delay by 100ms
+        case IR_E2:  scalvol--; if(scalvol<1) scalvol = 1; EEPROM.write(STRANDEL,scalvol);Serial.print(F("scalvol:"));Serial.println(scalvol); break;    //e2 - On réduit la variable scalvol
+        case IR_E3:  scalvol++; if(scalvol>50) scalvol = 0; EEPROM.write(STRANDEL,scalvol);Serial.print(F("scalvol:"));Serial.println(scalvol); break;    //e3 - On rallonge la variable scalvol
         case IR_E4:  maxvol++; EEPROM.write(MXV, maxvol);Serial.print(F("Maxvol: ")); Serial.println(maxvol); break;                              //e4 -  Increase maxvol for less sensitive peak detection
 
         case IR_F1:  squelch--; if(squelch <0) squelch = 0; EEPROM.write(SQU, squelch);Serial.print(F("Squelch: ")); Serial.println(squelch);  break;  //f1 -  Reduce squelch value
@@ -639,7 +646,7 @@ void set_strandlen() {                                                  // Setti
 
 
 
-void set_meshdel() {                                                    // Setting our notasound delay for whatever strands are powered up.
+void set_meshdel() {                                                    // Setting our notasound delay for whatever strands are powered up. Pas utilisé ici.
 
   if(strandActive == 1) {                                               // Only do this if the strand is active.
     demorun = 0;                                                        // First we disable the demo mode.
